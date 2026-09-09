@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Currency Converter</title>
+<meta name="description" content="Güncel döviz kurlarıyla yuvarlak tutarları tek bakışta gösteren Android uygulaması ve ana ekran widget'ı.">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #101114;
+    --card: #17181c;
+    --card-border: #262830;
+    --text: #f2f3f5;
+    --muted: #9aa0ab;
+    --accent: #d9483a;
+    --accent-2: #17181c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  /* nav */
+  nav.top {
+    border-bottom: 1px solid var(--card-border);
+  }
+  nav.top .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 0.9rem;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+  }
+  .brand img { width: 28px; height: 28px; border-radius: 7px; }
+  .lang-switch {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .lang-switch button {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .lang-switch button[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* hero */
+  header.hero {
+    padding: 3.5rem 0 2.5rem;
+    text-align: center;
+  }
+  header.hero img.icon {
+    width: 96px;
+    height: 96px;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(217, 72, 58, 0.35);
+    margin-bottom: 1.25rem;
+  }
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 0.6rem;
+  }
+  .tagline {
+    color: var(--muted);
+    font-size: 1.1rem;
+    max-width: 34rem;
+    margin: 0 auto 1.75rem;
+  }
+  .badges {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: var(--card);
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .badge.store {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* showcase */
+  section.showcase {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0 3rem;
+  }
+  section.showcase img {
+    max-width: 260px;
+    width: 100%;
+    border-radius: 28px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  }
+
+  /* features */
+  section.features {
+    padding: 1rem 0 3rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+    text-align: center;
+    margin: 0 0 2rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .feature {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 1.25rem 1.35rem;
+  }
+  .feature .emoji {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .feature h3 {
+    font-size: 1rem;
+    margin: 0 0 0.35rem;
+  }
+  .feature p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  .feature a { color: var(--accent); }
+
+  /* footer */
+  footer {
+    border-top: 1px solid var(--card-border);
+    padding: 1.75rem 0 2.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  footer .links {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+  footer a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  footer a:hover { color: var(--text); }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <div class="brand">
+      <img src="assets/icon.webp" alt="">
+      <span>Fast Currency Converter</span>
+    </div>
+    <div class="lang-switch">
+      <button type="button" id="btn-tr" aria-pressed="true" onclick="setLang('tr')">TR</button>
+      <button type="button" id="btn-en" aria-pressed="false" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <img class="icon" src="assets/icon.webp" alt="Fast Currency Converter simgesi">
+    <h1>Fast Currency Converter</h1>
+    <p class="tagline" id="tagline">Güncel kurlarla, yuvarlak tutarların çevirisini tek bakışta gör — uygulamada ve ana ekran widget'ında.</p>
+    <div class="badges">
+      <span class="badge store" id="store-badge">Google Play — Yakında</span>
+      <span class="badge" id="badge-widget">📱 Ana ekran widget'ı</span>
+      <span class="badge" id="badge-free">🚫 Reklamsız &amp; takipsiz</span>
+    </div>
+  </div>
+</header>
+
+<section class="showcase">
+  <img src="assets/widget-screenshot.png" alt="USD - TRY çevrim tablosunu gösteren widget önizlemesi">
+</section>
+
+<section class="features">
+  <div class="wrap">
+    <h2 id="features-title">Neler sunuyor?</h2>
+    <div class="grid" id="features-grid">
+      <div class="feature">
+        <span class="emoji">💱</span>
+        <h3>Anlık kurlar</h3>
+        <p>Kurlar <a href="https://www.frankfurter.dev" target="_blank" rel="noopener">frankfurter.dev</a>'den canlı çekilir, API anahtarı ya da kayıt gerekmez.</p>
+      </div>
+      <div class="feature">
+        <span class="emoji">🔢</span>
+        <h3>Yuvarlak tutar tablosu</h3>
+        <p>100'den 1M'a beş farklı seviyede, on satırlık hazır bir çeviri tablosu — tek tek hesap yapmaya gerek yok.</p>
+      </div>
+      <div class="feature">
+        <span class="emoji">🏠</span>
+        <h3>Ana ekran widget'ı</h3>
+        <p>Uygulamayı açmadan güncel kurları gör; widget da uygulamayla aynı veriyi kullanır.</p>
+      </div>
+      <div class="feature">
+        <span class="emoji">🔄</span>
+        <h3>Tek dokunuşla yön değiştir</h3>
+        <p>Para birimi çiftini seç, tek dokunuşla yönü ters çevir.</p>
+      </div>
+      <div class="feature">
+        <span class="emoji">🌍</span>
+        <h3>Tüm para birimleri</h3>
+        <p>Frankfurter API'nin desteklediği tüm para birimleri arasından seçim yapabilirsin.</p>
+      </div>
+      <div class="feature">
+        <span class="emoji">🔒</span>
+        <h3>Reklamsız, takipsiz</h3>
+        <p>Analiz ya da reklam SDK'sı yok; tercihlerin yalnızca cihazında kalır. Bkz. <a href="privacy-policy.html">gizlilik politikası</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="links">
+      <a href="privacy-policy.html">Gizlilik Politikası</a>
+      <a href="https://github.com/burakztrk/FastCurrencyConverter" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/burakztrk/FastCurrencyConverter/releases/latest" target="_blank" rel="noopener">En son APK</a>
+    </div>
+    <span id="footer-text">Fast Currency Converter — com.booapps.fastcurrencyconverter</span>
+  </div>
+</footer>
+
+<script>
+  var copy = {
+    tr: {
+      tagline: "Güncel kurlarla, yuvarlak tutarların çevirisini tek bakışta gör — uygulamada ve ana ekran widget'ında.",
+      store: "Google Play — Yakında",
+      widget: "📱 Ana ekran widget'ı",
+      free: "🚫 Reklamsız & takipsiz",
+      featuresTitle: "Neler sunuyor?",
+      footer: "Fast Currency Converter — com.booapps.fastcurrencyconverter",
+      links: ["Gizlilik Politikası", "GitHub", "En son APK"],
+      features: [
+        ["💱", "Anlık kurlar", 'Kurlar <a href="https://www.frankfurter.dev" target="_blank" rel="noopener">frankfurter.dev</a>\'den canlı çekilir, API anahtarı ya da kayıt gerekmez.'],
+        ["🔢", "Yuvarlak tutar tablosu", "100'den 1M'a beş farklı seviyede, on satırlık hazır bir çeviri tablosu — tek tek hesap yapmaya gerek yok."],
+        ["🏠", "Ana ekran widget'ı", "Uygulamayı açmadan güncel kurları gör; widget da uygulamayla aynı veriyi kullanır."],
+        ["🔄", "Tek dokunuşla yön değiştir", "Para birimi çiftini seç, tek dokunuşla yönü ters çevir."],
+        ["🌍", "Tüm para birimleri", "Frankfurter API'nin desteklediği tüm para birimleri arasından seçim yapabilirsin."],
+        ["🔒", "Reklamsız, takipsiz", 'Analiz ya da reklam SDK\'sı yok; tercihlerin yalnızca cihazında kalır. Bkz. <a href="privacy-policy.html">gizlilik politikası</a>.']
+      ]
+    },
+    en: {
+      tagline: "See round amounts convert at today's rate, at a glance — in the app and on the home-screen widget.",
+      store: "Google Play — Coming soon",
+      widget: "📱 Home-screen widget",
+      free: "🚫 No ads, no tracking",
+      featuresTitle: "What it does",
+      footer: "Fast Currency Converter — com.booapps.fastcurrencyconverter",
+      links: ["Privacy Policy", "GitHub", "Latest APK"],
+      features: [
+        ["💱", "Live exchange rates", 'Rates are fetched live from <a href="https://www.frankfurter.dev" target="_blank" rel="noopener">frankfurter.dev</a> — no API key, no sign-up.'],
+        ["🔢", "Round-amount table", "A ready-made table across five tiers, 100 up to 1M, ten rows each — no manual math needed."],
+        ["🏠", "Home-screen widget", "See current rates without opening the app; the widget shares the same data as the app."],
+        ["🔄", "Swap direction in one tap", "Pick your currency pair, flip the direction with a single tap."],
+        ["🌍", "Every currency", "Choose from every currency the Frankfurter API supports."],
+        ["🔒", "No ads, no tracking", 'No analytics or ad SDKs; your preferences stay on your device. See the <a href="privacy-policy.html">privacy policy</a>.']
+      ]
+    }
+  };
+
+  function renderFeatures(lang) {
+    var grid = document.getElementById('features-grid');
+    grid.innerHTML = copy[lang].features.map(function (f) {
+      return '<div class="feature"><span class="emoji">' + f[0] + '</span><h3>' + f[1] + '</h3><p>' + f[2] + '</p></div>';
+    }).join('');
+  }
+
+  function setLang(lang) {
+    var isTr = lang === 'tr';
+    document.getElementById('btn-tr').setAttribute('aria-pressed', String(isTr));
+    document.getElementById('btn-en').setAttribute('aria-pressed', String(!isTr));
+    var c = copy[lang];
+    document.getElementById('tagline').textContent = c.tagline;
+    document.getElementById('store-badge').textContent = c.store;
+    document.getElementById('badge-widget').textContent = c.widget;
+    document.getElementById('badge-free').textContent = c.free;
+    document.getElementById('features-title').textContent = c.featuresTitle;
+    document.getElementById('footer-text').textContent = c.footer;
+    var linkEls = document.querySelectorAll('footer .links a');
+    c.links.forEach(function (text, i) { if (linkEls[i]) linkEls[i].textContent = text; });
+    renderFeatures(lang);
+    document.documentElement.lang = lang;
+    try { localStorage.setItem('fcc-site-lang', lang); } catch (e) {}
+  }
+
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem('fcc-site-lang'); } catch (e) {}
+    if (saved === 'en') setLang('en');
+  })();
+</script>
+</body>
+</html>
